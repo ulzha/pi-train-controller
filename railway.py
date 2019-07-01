@@ -38,6 +38,7 @@ def run_trains():
    express_train_departed_eastbound = None
    express_train_braked_far_east = None
    express_train_arrived_far_east = None
+   loop_ended = None
 
    # the express train starts before the east sensor, driving westbound fast
    rc.drive(EXPRESS_TRAIN_CHANNEL, 8 | 1)
@@ -126,20 +127,21 @@ def run_trains():
            print('express_train_braked_far_east:', express_train_braked_far_east)
 
        if express_train_braked_far_east and time.time() - express_train_braked_far_east > 1 and not express_train_arrived_far_east:
-           # stop at platform far west
+           # stop at platform far east
            rc.drive(EXPRESS_TRAIN_CHANNEL, 8)
            express_train_arrived_far_east = time.time()
            print('express_train_arrived_far_east:', express_train_arrived_far_east)
 
-       if express_train_arrived_far_east:
-           print('exiting')
+       if express_train_arrived_far_east and time.time() - express_train_arrived_far_east > 4 and not loop_ended:
+           loop_ended = time.time()
+           print('loop_ended:', loop_ended)
            break
 
-       print('SENSOR_WEST_PIN:', pi.read(SENSOR_WEST_PIN))
        time.sleep(.01)
 
 try:
-   run_trains()
+   while True:
+       run_trains()
 finally:
    # shut down all the things
    print('shutting down all the things', flush=True)
