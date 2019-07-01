@@ -1,7 +1,7 @@
 import pigpio
 from time import sleep
 
-class lego_remote:
+class LEGO_RC:
     """ Implements the protocol documented in LEGO Power Functions RC 1.20. """
     # https://github.com/iConor/lego-lirc/blob/master/docs/LEGO_Power_Functions_RC_v120.pdf
 
@@ -50,75 +50,9 @@ class lego_remote:
 
         print('Sending', end='...')
         while self._pi.wave_tx_busy():
-            sleep(.1)
+            sleep(.01)
         print(' done')
 
     def drive(self, channel, speed):
         """ Combo PWM mode """
         self._send(0b0100 | channel, speed, speed)
-
-
-pi = pigpio.pi()
-
-if not pi.connected:
-   exit(0)
-
-##r = lego_remote(pi, 3)
-##r.drive(0, 5)  # forward
-##sleep(2)
-##r.drive(0, 8)  # brake then float
-##sleep(2)
-##r.drive(0, 8 | 5)  # backward
-##sleep(2)
-##r.drive(0, 8)  # brake then float
-
-##IR_GPIO = 12
-##r = lego_remote(pi, IR_GPIO)
-##while True:
-##    r.drive(3, 4)  # forward
-##    sleep(1)
-##    r.drive(3, 8)  # brake then float
-##    sleep(1)
-
-pi.set_pull_up_down(23, pigpio.PUD_UP)
-pi.set_mode(23, pigpio.INPUT)
-
-pi.set_pull_up_down(25, pigpio.PUD_UP)
-pi.set_mode(25, pigpio.INPUT)
-
-bits_23 = ''
-bits_25 = ''
-while True:
-   bits_23 += str(pi.read(23))
-   bits_25 += str(pi.read(25))
-   if len(bits_23) == 10:
-       print(bits_23 + '  ' + bits_25, flush=True)
-       bits_23 = ''
-       bits_25 = ''
-   sleep(.1)
-
-# for i in range(2):
-#     # pi.set_servo_pulsewidth(16, 2500) # clockwise
-#     # sleep(.5)
-#     # pi.set_servo_pulsewidth(16, 0)
-#     # sleep(.5)
-#
-#     # pi.set_servo_pulsewidth(16, 1500) # center
-#     # sleep(.5)
-#     # pi.set_servo_pulsewidth(16, 0)
-#     # sleep(.5)
-#
-#     # pi.set_servo_pulsewidth(16, 800) # safe anti-clockwise
-#     # sleep(.5)
-#     # pi.set_servo_pulsewidth(16, 0)
-#     # sleep(.5)
-#
-#     pi.set_servo_pulsewidth(16, 2000)
-#     sleep(.3)
-#     pi.set_servo_pulsewidth(16, 0)
-#     sleep(1)
-#
-#     pi.set_servo_pulsewidth(16, 1000)
-#     sleep(.3)  # this side is harder due to axis misalignment
-#     pi.set_servo_pulsewidth(16, 0)
-#     sleep(1)
